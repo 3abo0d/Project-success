@@ -44,7 +44,7 @@ public class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage {
             }
             paths.add(out.getAbsolutePath());
         }
-        loader = new DexClassLoader(android.text.TextUtils.join(":", paths), null, null, p.classLoader);
+        loader = new PortLoader(android.text.TextUtils.join(":", paths), null, null, p.classLoader);
         BufferedReader br = new BufferedReader(new InputStreamReader(z.getInputStream(z.getEntry("assets/carry.txt"))));
         String line; int ok = 0, bad = 0;
         Map<String, Integer> kinds = new TreeMap<>();
