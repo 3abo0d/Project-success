@@ -21,7 +21,7 @@ public class PortLoader extends DexClassLoader {
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         if (shadow(name)) {
-            synchronized (getClassLoadingLock(name)) {
+            synchronized (this) {
                 Class<?> c = findLoadedClass(name);
                 if (c == null) {
                     try { c = findClass(name); } catch (ClassNotFoundException ignored) { }
