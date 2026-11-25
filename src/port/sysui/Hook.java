@@ -133,7 +133,22 @@ public class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         return b.toString();
     }
 
+    static String nameOf(Resources r, int id) {
+        try { return r.getResourceName(id); } catch (Throwable t) { return "MISSING"; }
+    }
+
     static void selfTest(Context ctx) {
+        try {
+            Resources sys = ((android.content.ContextWrapper) ctx).getBaseContext().getResources();
+            int[] ids = {0x7f060160, 0x7f0702b5, 0x7f0d0239, 0x7f060001, 0x7f070001};
+            for (int id : ids) {
+                XposedBridge.log("PORT169 ID 0x" + Integer.toHexString(id) + " ours=" + nameOf(res169, id)
+                    + " systemui=" + nameOf(sys, id));
+            }
+            XposedBridge.log("PORT169 cfg ours=" + res169.getConfiguration() + " systemui=" + sys.getConfiguration());
+        } catch (Throwable t) {
+            XposedBridge.log("PORT169 diag fail: " + t);
+        }
         String[] names = {"layout_keyguard_capsule_mask", "layout_keyguard_immersed_mask",
             "capsule_item_view", "oplus_capsule_and_immersive_card_container"};
         int ok = 0, bad = 0;
