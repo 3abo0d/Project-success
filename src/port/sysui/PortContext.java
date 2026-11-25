@@ -3,7 +3,9 @@ package port.sysui;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.view.Display;
 import android.view.LayoutInflater;
 
 public class PortContext extends ContextWrapper {
@@ -21,6 +23,8 @@ public class PortContext extends ContextWrapper {
     }
 
     @Override public Context getApplicationContext() { return this; }
+    @Override public Context createConfigurationContext(Configuration c) { return this; }
+    @Override public Context createDisplayContext(Display d) { return this; }
     @Override public Resources getResources() { return res; }
     @Override public AssetManager getAssets() { return res.getAssets(); }
     @Override public Resources.Theme getTheme() { return theme; }
