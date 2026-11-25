@@ -79,6 +79,29 @@ public class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         } catch (Throwable t) {
             XposedBridge.log("PORT169 resource fallback hook failed: " + t);
         }
+        try {
+            Class<?> depImpl = XposedHelpers.findClass("com.oplus.systemui.OplusDependencyImpl", parent);
+            try { Wire.aospDep = XposedHelpers.findClass("com.android.systemui.Dependency", parent); } catch (Throwable ignored) { }
+            XposedBridge.hookAllMethods(depImpl, "createDependency", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    try {
+                        Wire.oplusDep = param.thisObject;
+                        if (param.args.length > 0 && param.args[0] instanceof Class) {
+                            Class<?> want = (Class<?>) param.args[0];
+                            if (Wire.ours(want)) {
+                                Object o = Wire.get(want);
+                                if (o != null) param.setResult(o);
+                            }
+                        }
+                    } catch (Throwable t) {
+                        XposedBridge.log("PORT169 dep hook error: " + t);
+                    }
+                }
+            });
+        } catch (Throwable t) {
+            XposedBridge.log("PORT169 dependency hook failed: " + t);
+        }
         new Thread(() -> {
             try { setup(dataDir, parent); } catch (Throwable t) { XposedBridge.log("PORT169 fatal: " + t); }
         }, "port169").start();
