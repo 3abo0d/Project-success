@@ -3,7 +3,7 @@ package port.sysui;
 import dalvik.system.DexClassLoader;
 
 public class PortLoader extends DexClassLoader {
-    static final String[] PREFIX = {"com.oplus.posteffect.", "com.oplus.effectengine."};
+    static final String[] PREFIX = {"com.oplus.posteffect.", "com.oplus.effectengine.", "com.oplus.systemui.notification.blur."};
     static final String[] EXACT = {
         "com.android.systemui.statusbar.notification.stack.ExpandableViewState",
         "com.android.systemui.statusbar.notification.stack.AnimationFilter",
