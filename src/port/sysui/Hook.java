@@ -126,6 +126,13 @@ public class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         new Handler(Looper.getMainLooper()).post(() -> selfTest(pc));
     }
 
+    static String describe(Throwable c) {
+        StringBuilder b = new StringBuilder(String.valueOf(c));
+        StackTraceElement[] st = c.getStackTrace();
+        for (int i = 0; i < st.length && i < 6; i++) b.append(" | ").append(st[i]);
+        return b.toString();
+    }
+
     static void selfTest(Context ctx) {
         String[] names = {"layout_keyguard_capsule_mask", "layout_keyguard_immersed_mask",
             "capsule_item_view", "oplus_capsule_and_immersive_card_container"};
@@ -142,7 +149,7 @@ public class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage {
             } catch (Throwable t) {
                 Throwable c = t;
                 while (c.getCause() != null) c = c.getCause();
-                XposedBridge.log("PORT169 INFLATE FAIL " + n + " : " + c);
+                XposedBridge.log("PORT169 INFLATE FAIL " + n + " : " + describe(c));
                 bad++;
             }
         }
@@ -173,7 +180,7 @@ public class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage {
             } catch (Throwable t) {
                 Throwable c = t;
                 while (c.getCause() != null) c = c.getCause();
-                XposedBridge.log("PORT169 container inflate FAIL : " + c);
+                XposedBridge.log("PORT169 container inflate FAIL : " + describe(c));
             }
         } catch (Throwable t) {
             XposedBridge.log("PORT169 attach fail: " + t);

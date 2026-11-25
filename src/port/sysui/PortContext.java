@@ -20,6 +20,7 @@ public class PortContext extends ContextWrapper {
         this.theme = t;
     }
 
+    @Override public Context getApplicationContext() { return this; }
     @Override public Resources getResources() { return res; }
     @Override public AssetManager getAssets() { return res.getAssets(); }
     @Override public Resources.Theme getTheme() { return theme; }

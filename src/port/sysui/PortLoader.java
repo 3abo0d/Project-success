@@ -6,7 +6,9 @@ public class PortLoader extends DexClassLoader {
     static final String[] PREFIX = {"com.oplus.posteffect.", "com.oplus.effectengine."};
     static final String[] EXACT = {
         "com.android.systemui.statusbar.notification.stack.ExpandableViewState",
-        "com.android.systemui.statusbar.notification.stack.AnimationFilter"};
+        "com.android.systemui.statusbar.notification.stack.AnimationFilter",
+        "com.android.systemui.statusbar.notification.AnimatableProperty",
+        "com.oplus.systemui.R", "com.android.systemui.R"};
 
     public PortLoader(String dexPath, String opt, String lib, ClassLoader parent) {
         super(dexPath, opt, lib, parent);
