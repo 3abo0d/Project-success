@@ -32,6 +32,7 @@ public class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     public static ClassLoader loader;
     public static Resources res169;
     public static Context portContext;
+    static int fallbackLogs = 0;
 
     public void initZygote(IXposedHookZygoteInit.StartupParam s) { modulePath = s.modulePath; }
 
@@ -55,6 +56,28 @@ public class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage {
             });
         } catch (Throwable t) {
             XposedBridge.log("PORT169 bottom area hook failed: " + t);
+        }
+        try {
+            Class<?> impl = XposedHelpers.findClass("android.content.res.ResourcesImpl", null);
+            XposedBridge.hookAllMethods(impl, "getValue", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    Throwable t = param.getThrowable();
+                    if (!(t instanceof Resources.NotFoundException) || res169 == null) return;
+                    if (param.args.length != 3 || !(param.args[0] instanceof Integer)) return;
+                    try {
+                        Object impl169 = XposedHelpers.getObjectField(res169, "mResourcesImpl");
+                        if (impl169 == null || impl169 == param.thisObject) return;
+                        XposedHelpers.callMethod(impl169, "getValue", param.args[0], param.args[1], param.args[2]);
+                        param.setResult(null);
+                        if (fallbackLogs++ < 25) {
+                            XposedBridge.log("PORT169 fallback id=0x" + Integer.toHexString((Integer) param.args[0]));
+                        }
+                    } catch (Throwable ignored) { }
+                }
+            });
+        } catch (Throwable t) {
+            XposedBridge.log("PORT169 resource fallback hook failed: " + t);
         }
         new Thread(() -> {
             try { setup(dataDir, parent); } catch (Throwable t) { XposedBridge.log("PORT169 fatal: " + t); }
